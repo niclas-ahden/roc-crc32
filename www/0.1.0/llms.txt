@@ -1,0 +1,22 @@
+# LLM Docs
+
+## Compact Docs
+
+Copy just this section if you want to keep your context small.
+If you want all docs, check the section `Full Docs per Module` below.
+
+Crc32.checksum : List U8 -> U32
+
+## Full Docs per Module
+### Crc32
+
+checksum : List U8 -> U32
+
+Description:
+Calculate CRC32 checksum for a byte array.
+
+    Crc32.checksum(Str.to_utf8("123456789"))  # 0xCBF43926
+    Crc32.checksum([0x00])                    # 0xD202EF8D
+    Crc32.checksum([])                        # 0
+
+
