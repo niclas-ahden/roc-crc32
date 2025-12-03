@@ -9,7 +9,7 @@ View the brief API documentation at [https://niclas-ahden.github.io/roc-crc32/](
 ```roc
 app [main!] {
     pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.20.0/X73hGh05nNTkDHU06FHC0YfFaQB1pimX7gncRcao5mU.tar.br",
-    crc32: "https://github.com/niclas-ahden/roc-crc32/releases/download/0.1.0/<HASH>.tar.br",
+    crc32: "https://github.com/niclas-ahden/roc-crc32/releases/download/0.1.0/Cog8JfLXfq1eR01U9vju-HviCDKl-Ir6IYFKlb6m6uE.tar.br",
 }
 
 import pf.Stdout
