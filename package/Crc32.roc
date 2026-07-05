@@ -3,10 +3,11 @@ Crc32 := U32.{
 
 	## Calculate CRC32 checksum for a byte array.
 	##
-	##     Crc32.checksum("123456789".to_utf8())  # 0xCBF43926
-	##     Crc32.checksum([0x00])                 # 0xD202EF8D
-	##     Crc32.checksum([])                     # 0
-	##
+	## ```roc
+	## Crc32.checksum("123456789".to_utf8())  # 0xCBF43926
+	## Crc32.checksum([0x00])                 # 0xD202EF8D
+	## Crc32.checksum([])                     # 0
+	## ```
 	checksum : List(U8) -> U32
 	checksum = |bytes| {
 		initial_crc : U32
