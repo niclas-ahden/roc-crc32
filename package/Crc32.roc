@@ -1,5 +1,5 @@
 ## CRC32 checksum calculation as used in ZIP, PNG, gzip etc. (ISO 3309 / IEEE 802.3). Other variants like CRC32C (Castagnoli) are not supported.
-Crc32 := U32.{
+Crc32 :: U32.{
 
 	## Calculate CRC32 checksum for a byte array.
 	##
@@ -9,19 +9,36 @@ Crc32 := U32.{
 	## Crc32.checksum([])                     # 0
 	## ```
 	checksum : List(U8) -> U32
-	checksum = |bytes| {
-		initial_crc : U32
-		initial_crc = 0xFFFFFFFF
+	checksum = |bytes| Crc32.begin().update(bytes).finish()
 
-		final_crc = bytes.fold(
-			initial_crc,
+	## Start a streaming CRC32 calculation.
+	##
+	## Use `begin`, `update`, and `finish` when you get the data in chunks,
+	## e.g. when reading a large file piece by piece. Feeding the chunks
+	## through `update` gives the same checksum as one `checksum` call
+	## on all of the bytes at once.
+	##
+	## ```roc
+	## Crc32.begin()
+	##     .update("1234".to_utf8())
+	##     .update("56789".to_utf8())
+	##     .finish()  # 0xCBF43926
+	## ```
+	begin : () -> Crc32
+	begin = || Crc32.(0xFFFFFFFF)
+
+	## Add a chunk of bytes to a streaming CRC32 calculation.
+	update : Crc32, List(U8) -> Crc32
+	update = |Crc32.(state), bytes| {
+		new_state = bytes.fold(
+			state,
 			|crc, byte| {
 				# index = (crc XOR byte) AND 0xFF, keeping the low byte to index the table.
 				index = crc.bitwise_xor(byte.to_u32()).bitwise_and(0xFF)
 
 				# index is guaranteed to be 0-255 due to the 0xFF mask, so the lookup
 				# can never fail. If it does, the algorithm is broken.
-				table_value = 
+				table_value =
 					match crc32_table.get(index.to_u64()) {
 						Ok(value) => value
 						Err(_) => {
@@ -33,14 +50,18 @@ Crc32 := U32.{
 			},
 		)
 
-		final_crc.bitwise_xor(0xFFFFFFFF)
+		Crc32.(new_state)
 	}
+
+	## Finish a streaming CRC32 calculation and get the checksum.
+	finish : Crc32 -> U32
+	finish = |Crc32.(state)| state.bitwise_xor(0xFFFFFFFF)
 }
 
 ## CRC32 lookup table (256 entries), generated from polynomial 0xEDB88320.
 ##
 ## Defined at module scope (outside the `Crc32` associated block) so it stays
-## private to this module — `checksum` can read it, but callers cannot.
+## private to this module. `update` can read it, but callers cannot.
 crc32_table : List(U32)
 crc32_table = [
 	0x00000000,
@@ -316,6 +337,34 @@ expect {
 	bytes : List(U8)
 	bytes = Iter.inclusive_range(0, 255).fold([], |acc, n| acc.append(n))
 	Crc32.checksum(bytes) == 0x29058C73
+}
+
+# Streaming gives the same result as a one-shot checksum
+expect Crc32.begin().update("1234".to_utf8()).update("56789".to_utf8()).finish() == 0xCBF43926
+
+# Streaming with no bytes matches checksum([])
+expect Crc32.begin().finish() == 0x00000000
+
+# Empty chunks don't affect the result
+expect Crc32.begin().update([]).update("123456789".to_utf8()).update([]).finish() == 0xCBF43926
+
+# Streaming one byte at a time
+expect {
+	bytes = "The quick brown fox jumps over the lazy dog".to_utf8()
+	streamed = bytes.fold(Crc32.begin(), |crc32, byte| crc32.update([byte])).finish()
+	streamed == 0x414FA339
+}
+
+# Splitting the 0..255 vector into uneven chunks matches the one-shot checksum
+expect {
+	bytes : List(U8)
+	bytes = Iter.inclusive_range(0, 255).fold([], |acc, n| acc.append(n))
+	streamed = Crc32.begin()
+		.update(bytes.take_first(7))
+		.update(bytes.drop_first(7).take_first(100))
+		.update(bytes.drop_first(107))
+		.finish()
+	streamed == Crc32.checksum(bytes)
 }
 
 # The 256-entry table above is hand-copied, so verify it is internally consistent
