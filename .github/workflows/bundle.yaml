@@ -34,10 +34,10 @@ jobs:
         run: nix build .#roc
 
       - name: Bundle the library
-        # roc bundle won't create the output dir itself, it fails silently if it's missing
+        working-directory: package
         run: |
-          mkdir -p dist
-          ./result/bin/roc bundle --output-dir dist package/main.roc
+          mkdir -p ../dist
+          "$GITHUB_WORKSPACE/result/bin/roc" bundle --output-dir ../dist main.roc
 
       - name: Attach the bundle to the release
         env:
