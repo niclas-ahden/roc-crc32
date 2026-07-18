@@ -335,7 +335,7 @@ expect Crc32.checksum([0xFF, 0xFF, 0xFF, 0xFF]) == 0xFFFFFFFF
 # Longer multi-byte vector: bytes 0..255
 expect {
 	bytes : List(U8)
-	bytes = Iter.inclusive_range(0, 255).fold([], |acc, n| acc.append(n))
+	bytes = (0..=255).fold([], |acc, n| acc.append(n))
 	Crc32.checksum(bytes) == 0x29058C73
 }
 
@@ -358,7 +358,7 @@ expect {
 # Splitting the 0..255 vector into uneven chunks matches the one-shot checksum
 expect {
 	bytes : List(U8)
-	bytes = Iter.inclusive_range(0, 255).fold([], |acc, n| acc.append(n))
+	bytes = (0..=255).fold([], |acc, n| acc.append(n))
 	streamed = Crc32.begin()
 		.update(bytes.take_first(7))
 		.update(bytes.drop_first(7).take_first(100))
