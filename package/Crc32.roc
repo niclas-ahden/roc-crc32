@@ -46,7 +46,7 @@ Crc32 :: U32.{
 						}
 					}
 
-				table_value.bitwise_xor(crc.shift_right_by(8))
+				table_value.bitwise_xor(crc.shr_wrap(8))
 			},
 		)
 
@@ -375,7 +375,7 @@ expect {
 	entry = [0, 0, 0, 0, 0, 0, 0, 0].fold(
 		1,
 		|c, _| {
-			shifted = c.shift_right_by(1)
+			shifted = c.shr_wrap(1)
 			if c.bitwise_and(1) == 1 {
 				shifted.bitwise_xor(polynomial)
 			} else {

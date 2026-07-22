@@ -37,11 +37,11 @@
     "roc-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1784449709,
-        "narHash": "sha256-JdC65SUAlUjAsYjehypWXgqnWOSedVc0tmJM9MOq5nE=",
+        "lastModified": 1784730334,
+        "narHash": "sha256-AckKzCnssgy298s3GwdRc28TaBGw8wQj6WawK9NtK7w=",
         "owner": "roc-lang",
         "repo": "roc",
-        "rev": "9986a84458bdec0e7def38b01bab8f035ed26151",
+        "rev": "18ef7fc30c0bc4957120e663f0183d296b981d5f",
         "type": "github"
       },
       "original": {

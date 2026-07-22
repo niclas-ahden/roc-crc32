@@ -6,7 +6,7 @@ CRC32 checksum calculation as used in ZIP, PNG, gzip etc. (ISO 3309 / IEEE 802.3
 
 ```roc
 app [main!] {
-    pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.9/8GdFEvQYS3TeAZxKvTzCLVdQiomweGtXcdZkXNDEeABq.tar.zst",
+    pf: platform "https://github.com/niclas-ahden/basic-cli/releases/download/0.22.1/DobkAk7zNyqAgqh2Riaj5c5DtWtKhd5iVYE5RFa6izcd.tar.zst",
     crc32: "https://github.com/niclas-ahden/roc-crc32/releases/download/1.0.0/2urjSYAC2eMaxfgVgxcznNfEUV4jALxgc5RWneZaw4RE.tar.zst",
 }
 
@@ -16,7 +16,7 @@ import crc32.Crc32
 main! = |_args| {
     # Calculate the checksum in one shot given some bytes
     one_shot = Crc32.checksum("My wife is pregnant".to_utf8())
-    Stdout.line!("One-shot: ${one_shot.to_str()}")
+    Stdout.line!("One-shot: ${one_shot.to_str()}")?
 
     # Or calculate the checksum piece by piece with `begin`, `update`, and
     # `finish`. Useful when you get the data in chunks, e.g. when reading a file.
@@ -26,7 +26,7 @@ main! = |_args| {
         "pregnant".to_utf8(),
     ]
     streamed = chunks.fold(Crc32.begin(), Crc32.update).finish()
-    Stdout.line!("Streaming: ${streamed.to_str()}")
+    Stdout.line!("Streaming: ${streamed.to_str()}")?
 
     # Both of these examples will output the same checksum
 
