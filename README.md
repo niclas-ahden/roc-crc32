@@ -7,7 +7,7 @@ CRC32 checksum calculation as used in ZIP, PNG, gzip etc. (ISO 3309 / IEEE 802.3
 ```roc
 app [main!] {
     pf: platform "https://github.com/niclas-ahden/basic-cli/releases/download/0.22.1/DobkAk7zNyqAgqh2Riaj5c5DtWtKhd5iVYE5RFa6izcd.tar.zst",
-    crc32: "https://github.com/niclas-ahden/roc-crc32/releases/download/1.0.0/2urjSYAC2eMaxfgVgxcznNfEUV4jALxgc5RWneZaw4RE.tar.zst",
+    crc32: "https://github.com/niclas-ahden/roc-crc32/releases/download/1.0.2/3SyZRNx1Qc8SrCv8Q6zi3KJT8pYfcf7RrVqdG2S1cnZ1.tar.zst",
 }
 
 import pf.Stdout
