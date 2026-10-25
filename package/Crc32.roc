@@ -9,27 +9,27 @@ Crc32 :: U32.{
 	## Crc32.checksum([])                     # 0
 	## ```
 	checksum : List(U8) -> U32
-	checksum = |bytes| Crc32.begin().update(bytes).finish()
+	checksum = |bytes| Crc32.empty().write(bytes).finish()
 
 	## Start a streaming CRC32 calculation.
 	##
-	## Use `begin`, `update`, and `finish` when you get the data in chunks,
+	## Use `empty`, `write`, and `finish` when you get the data in chunks,
 	## e.g. when reading a large file piece by piece. Feeding the chunks
-	## through `update` gives the same checksum as one `checksum` call
+	## through `write` gives the same checksum as one `checksum` call
 	## on all of the bytes at once.
 	##
 	## ```roc
-	## Crc32.begin()
-	##     .update("1234".to_utf8())
-	##     .update("56789".to_utf8())
+	## Crc32.empty()
+	##     .write("1234".to_utf8())
+	##     .write("56789".to_utf8())
 	##     .finish()  # 0xCBF43926
 	## ```
-	begin : () -> Crc32
-	begin = || Crc32.(0xFFFFFFFF)
+	empty : () -> Crc32
+	empty = || Crc32.(0xFFFFFFFF)
 
 	## Add a chunk of bytes to a streaming CRC32 calculation.
-	update : Crc32, List(U8) -> Crc32
-	update = |Crc32.(state), bytes| {
+	write : Crc32, List(U8) -> Crc32
+	write = |Crc32.(state), bytes| {
 		new_state = bytes.fold(
 			state,
 			|crc, byte| {
@@ -61,7 +61,7 @@ Crc32 :: U32.{
 ## CRC32 lookup table (256 entries), generated from polynomial 0xEDB88320.
 ##
 ## Defined at module scope (outside the `Crc32` associated block) so it stays
-## private to this module. `update` can read it, but callers cannot.
+## private to this module. `write` can read it, but callers cannot.
 crc32_table : List(U32)
 crc32_table = [
 	0x00000000,
@@ -340,18 +340,18 @@ expect {
 }
 
 # Streaming gives the same result as a one-shot checksum
-expect Crc32.begin().update("1234".to_utf8()).update("56789".to_utf8()).finish() == 0xCBF43926
+expect Crc32.empty().write("1234".to_utf8()).write("56789".to_utf8()).finish() == 0xCBF43926
 
 # Streaming with no bytes matches checksum([])
-expect Crc32.begin().finish() == 0x00000000
+expect Crc32.empty().finish() == 0x00000000
 
 # Empty chunks don't affect the result
-expect Crc32.begin().update([]).update("123456789".to_utf8()).update([]).finish() == 0xCBF43926
+expect Crc32.empty().write([]).write("123456789".to_utf8()).write([]).finish() == 0xCBF43926
 
 # Streaming one byte at a time
 expect {
 	bytes = "The quick brown fox jumps over the lazy dog".to_utf8()
-	streamed = bytes.fold(Crc32.begin(), |crc32, byte| crc32.update([byte])).finish()
+	streamed = bytes.fold(Crc32.empty(), |crc32, byte| crc32.write([byte])).finish()
 	streamed == 0x414FA339
 }
 
@@ -359,10 +359,10 @@ expect {
 expect {
 	bytes : List(U8)
 	bytes = List.from_iter((0..=255).iter())
-	streamed = Crc32.begin()
-		.update(bytes.take_first(7))
-		.update(bytes.drop_first(7).take_first(100))
-		.update(bytes.drop_first(107))
+	streamed = Crc32.empty()
+		.write(bytes.take_first(7))
+		.write(bytes.drop_first(7).take_first(100))
+		.write(bytes.drop_first(107))
 		.finish()
 	streamed == Crc32.checksum(bytes)
 }

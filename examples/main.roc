@@ -11,14 +11,14 @@ main! = |_args| {
 	one_shot = Crc32.checksum("My wife is pregnant".to_utf8())
 	Stdout.line!("One-shot: ${one_shot.to_str()}")?
 
-	# Or calculate the checksum piece by piece with `begin`, `update`, and
+	# Or calculate the checksum piece by piece with `empty`, `write`, and
 	# `finish`. Useful when you get the data in chunks, e.g. when reading a file.
 	chunks = [
 		"My wife ".to_utf8(),
 		"is ".to_utf8(),
 		"pregnant".to_utf8(),
 	]
-	streamed = chunks.fold(Crc32.begin(), Crc32.update).finish()
+	streamed = chunks.fold(Crc32.empty(), Crc32.write).finish()
 	Stdout.line!("Streaming: ${streamed.to_str()}")?
 
 	# Both of these examples will output the same checksum
