@@ -373,7 +373,7 @@ expect {
 	polynomial : U32
 	polynomial = 0xEDB88320
 	entry = [0, 0, 0, 0, 0, 0, 0, 0].fold(
-		1,
+		1.U32,
 		|c, _| {
 			shifted = c.shr_wrap(1)
 			if c.bitwise_and(1) == 1 {
